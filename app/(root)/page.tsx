@@ -36,14 +36,14 @@ const Home = () => {
                 loop
                 muted
                 src="/assets/videos/video1.mp4"
-                className="rounded-lg w-full md:w-1/3 border border-orange-700 shadow-orange-400"
+                className="rounded-lg w-full md:w-1/3  max-w-md border-orange-700 shadow-orange-400"
               />
               <video
                 autoPlay
                 loop
                 muted
                 src="/assets/videos/video2.mp4"
-                className="rounded-lg w-full md:w-1/3 border border-orange-700 shadow-orange-400"
+                className="rounded-lg w-full md:w-1/3  max-w-md border border-orange-700 shadow-orange-400"
               />
             </div>
           </div>
