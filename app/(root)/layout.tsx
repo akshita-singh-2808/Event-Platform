@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "../global.css";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -24,10 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
+    <ClerkProvider>
+      <html lang="en" className="dark">
+        <body className={`${poppins.variable} font-poppins antialiased`}>
+          <div className="flex h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
