@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "src": "/api/webhook/clerk",
+      "methods": ["POST"],
+      "headers": {
+        "authorization": "skip"
+      },
+      "dest": "/api/webhook/clerk"
+    }
+  ]
+}
