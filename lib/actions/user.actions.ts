@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+
 import { connectToDatabase } from '@/lib/database'
 import User from '@/lib/database/models/user.model'
 import Order from '@/lib/database/models/order.model'
@@ -11,57 +12,24 @@ import { CreateUserParams, UpdateUserParams } from '@/types'
 
 export async function createUser(user: CreateUserParams) {
   try {
-    console.log("🔥 createUser called with:", user);
+    await connectToDatabase()
 
-    await connectToDatabase();
-    console.log("📡 MongoDB connection successful");
-
-    const existingUser = await User.findOne({ clerkId: user.clerkId });
-    if (existingUser) {
-      console.log("⚠️ User already exists:", existingUser.email);
-      return JSON.parse(JSON.stringify(existingUser));
-    }
-
-    const newUser = await User.create(user);
-    console.log("✅ New user created in MongoDB:", newUser);
-
-    return JSON.parse(JSON.stringify(newUser));
+    const newUser = await User.create(user)
+    return JSON.parse(JSON.stringify(newUser))
   } catch (error) {
-    console.error("❌ Error in createUser:", error);
-    handleError(error);
+    handleError(error)
   }
 }
-
-// export async function createUser(user: CreateUserParams) {
-//   try {
-//     await connectToDatabase()
-
-//     const existingUser = await User.findOne({ clerkId: user.clerkId })
-//     if (existingUser) {
-//       console.log('⚠️ User already exists:', existingUser.email)
-//       return JSON.parse(JSON.stringify(existingUser))
-//     }
-
-//     const newUser = await User.create(user)
-//     console.log('✅ New user created:', newUser.email)
-
-//     return JSON.parse(JSON.stringify(newUser))
-//   } catch (error) {
-//     console.error('❌ Error in createUser:', error)
-//     handleError(error)
-//   }
-// }
 
 export async function getUserById(userId: string) {
   try {
     await connectToDatabase()
 
     const user = await User.findById(userId)
-    if (!user) throw new Error('User not found')
 
+    if (!user) throw new Error('User not found')
     return JSON.parse(JSON.stringify(user))
   } catch (error) {
-    console.error('❌ Error in getUserById:', error)
     handleError(error)
   }
 }
@@ -73,11 +41,8 @@ export async function updateUser(clerkId: string, user: UpdateUserParams) {
     const updatedUser = await User.findOneAndUpdate({ clerkId }, user, { new: true })
 
     if (!updatedUser) throw new Error('User update failed')
-
-    console.log('🔁 User updated:', updatedUser.email)
     return JSON.parse(JSON.stringify(updatedUser))
   } catch (error) {
-    console.error('❌ Error in updateUser:', error)
     handleError(error)
   }
 }
@@ -86,25 +51,31 @@ export async function deleteUser(clerkId: string) {
   try {
     await connectToDatabase()
 
+    // Find user to delete
     const userToDelete = await User.findOne({ clerkId })
 
-    if (!userToDelete) throw new Error('User not found')
+    if (!userToDelete) {
+      throw new Error('User not found')
+    }
 
+    // Unlink relationships
     await Promise.all([
+      // Update the 'events' collection to remove references to the user
       Event.updateMany(
         { _id: { $in: userToDelete.events } },
         { $pull: { organizer: userToDelete._id } }
       ),
+
+      // Update the 'orders' collection to remove references to the user
       Order.updateMany({ _id: { $in: userToDelete.orders } }, { $unset: { buyer: 1 } }),
     ])
 
+    // Delete user
     const deletedUser = await User.findByIdAndDelete(userToDelete._id)
     revalidatePath('/')
 
-    console.log('🗑️ User deleted:', deletedUser?.email)
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null
   } catch (error) {
-    console.error('❌ Error in deleteUser:', error)
     handleError(error)
   }
 }
