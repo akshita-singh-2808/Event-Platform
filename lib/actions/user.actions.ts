@@ -11,23 +11,46 @@ import { CreateUserParams, UpdateUserParams } from '@/types'
 
 export async function createUser(user: CreateUserParams) {
   try {
-    await connectToDatabase()
+    console.log("🔥 createUser called with:", user);
 
-    const existingUser = await User.findOne({ clerkId: user.clerkId })
+    await connectToDatabase();
+    console.log("📡 MongoDB connection successful");
+
+    const existingUser = await User.findOne({ clerkId: user.clerkId });
     if (existingUser) {
-      console.log('⚠️ User already exists:', existingUser.email)
-      return JSON.parse(JSON.stringify(existingUser))
+      console.log("⚠️ User already exists:", existingUser.email);
+      return JSON.parse(JSON.stringify(existingUser));
     }
 
-    const newUser = await User.create(user)
-    console.log('✅ New user created:', newUser.email)
+    const newUser = await User.create(user);
+    console.log("✅ New user created in MongoDB:", newUser);
 
-    return JSON.parse(JSON.stringify(newUser))
+    return JSON.parse(JSON.stringify(newUser));
   } catch (error) {
-    console.error('❌ Error in createUser:', error)
-    handleError(error)
+    console.error("❌ Error in createUser:", error);
+    handleError(error);
   }
 }
+
+// export async function createUser(user: CreateUserParams) {
+//   try {
+//     await connectToDatabase()
+
+//     const existingUser = await User.findOne({ clerkId: user.clerkId })
+//     if (existingUser) {
+//       console.log('⚠️ User already exists:', existingUser.email)
+//       return JSON.parse(JSON.stringify(existingUser))
+//     }
+
+//     const newUser = await User.create(user)
+//     console.log('✅ New user created:', newUser.email)
+
+//     return JSON.parse(JSON.stringify(newUser))
+//   } catch (error) {
+//     console.error('❌ Error in createUser:', error)
+//     handleError(error)
+//   }
+// }
 
 export async function getUserById(userId: string) {
   try {

@@ -8,6 +8,23 @@ import clerkClient from '@clerk/clerk-sdk-node'; // ✅ correct
 
 
 import { NextResponse } from 'next/server'
+// app/api/test-db/route.ts
+// import { NextResponse } from "next/server";
+// import { createUser } from "@/lib/actions/user.actions";
+
+export async function GET() {
+  const user = {
+    clerkId: "dummy123",
+    username: "testuser",
+    email: "test@example.com",
+    firstName: "Test",
+    lastName: "User",
+    photo: ""
+  };
+
+  const newUser = await createUser(user);
+  return NextResponse.json(newUser);
+}
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
