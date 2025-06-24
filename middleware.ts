@@ -4,8 +4,8 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/',
   '/events/:id',
-  '/api/webhook/clerk',
-  '/api/webhook/stripe',
+  // '/api/webhook/clerk',
+  // '/api/webhook/stripe',
   '/api/uploadthing',
   '/assets/videos/video1.mp4',
   '/assets/videos/video2.mp4'
