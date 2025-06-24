@@ -75,7 +75,8 @@ export async function deleteUser(clerkId: string) {
     revalidatePath('/')
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null
-  } catch (error) {
-    handleError(error)
-  }
+  }catch (error) {
+  console.error("createUser DB Error:", error); // ✅ See the error
+  throw error;
+}
 }
