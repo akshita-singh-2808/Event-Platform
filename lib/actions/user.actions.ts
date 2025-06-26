@@ -77,6 +77,6 @@ export async function deleteUser(clerkId: string) {
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null
   }catch (error) {
   console.error("createUser DB Error:", error); // ✅ See the error
-  throw error;
-}
-}
+    throw error;
+    }
+  }
