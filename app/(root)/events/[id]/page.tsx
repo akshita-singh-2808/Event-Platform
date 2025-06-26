@@ -5,19 +5,21 @@ import {
   getRelatedEventsByCategory,
 } from "@/lib/actions/event.actions";
 import { formatDateTime } from "@/lib/utils";
-import { SearchParamProps } from "@/types";
 import Image from "next/image";
 
 const EventDetails = async ({
-  params: { id },
+  params,
   searchParams,
-}: SearchParamProps) => {
-  const event = await getEventById(id);
+}: {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) => {
+  const event = await getEventById(params.id);
 
   const relatedEvents = await getRelatedEventsByCategory({
     categoryId: event.category._id,
     eventId: event._id,
-    page: searchParams.page as string,
+    page: (searchParams?.page as string) || "1",
   });
 
   return (
@@ -109,7 +111,7 @@ const EventDetails = async ({
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
           limit={3}
-          page={searchParams.page as string}
+          page={(searchParams?.page as string) || "1"}
           totalPages={relatedEvents?.totalPages}
         />
       </section>
