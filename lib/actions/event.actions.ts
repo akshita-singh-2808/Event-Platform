@@ -32,8 +32,29 @@ export async function createEvent({ userId, event, path }: CreateEventParams) {
   try {
     await connectToDatabase()
 
-    const organizer = await User.findOne({ clerkId: userId }) // ✅ find by Clerk ID
-    if (!organizer) throw new Error('Organizer not found')
+ let organizer = await User.findOne({ clerkId: userId }) // ✅ find by Clerk ID
+//  let organizer = await User.findOne({ clerkId: userId });
+
+    if (!organizer) {
+      // You need to fetch the user data from Clerk or your auth provider here.
+      // Example: import { clerkClient } from '@clerk/nextjs/server'
+      // and then:
+      // const clerkUser = await clerkClient.users.getUser(userId);
+
+      // For demonstration, here's a placeholder fetch (replace with your actual implementation):
+      const { clerkClient } = require('@clerk/nextjs/server');
+      const clerkUser = await clerkClient.users.getUser(userId);
+
+      organizer = await User.create({
+        clerkId: userId,
+        email: clerkUser.emailAddresses[0]?.emailAddress,
+        username: clerkUser.username || clerkUser.emailAddresses[0]?.emailAddress.split('@')[0],
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        photo: clerkUser.imageUrl,
+      });
+    }
+
 
     const newEvent = await Event.create({
       ...event,
