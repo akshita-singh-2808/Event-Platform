@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const rawBody = await req.text();
+  const body = await req.text();
   const headerList = await headers();
 
   const svixId = headerList.get('svix-id');
@@ -10,8 +10,12 @@ export async function POST(req: Request) {
   const svixSignature = headerList.get('svix-signature');
 
   console.log("✅ Webhook reached!");
-  console.log("🔐 Headers:", { svixId, svixTimestamp, svixSignature });
-  console.log("📦 Raw Body:", rawBody);
+  console.log("🧠 Headers:", { svixId, svixTimestamp, svixSignature });
+  console.log("📦 Raw Body:", body);
 
-  return NextResponse.json({ status: 'received', headers: { svixId, svixTimestamp, svixSignature } });
+  return NextResponse.json({
+    status: 'received',
+    headers: { svixId, svixTimestamp, svixSignature },
+    body: body,
+  });
 }
