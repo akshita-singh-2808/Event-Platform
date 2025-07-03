@@ -1,5 +1,8 @@
-import { NextResponse } from "next/server";
+
+// app/api/webhook/clerk/route.ts
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  return new NextResponse("✅ Webhook reached!", { status: 200 });
+  console.log("✅ Clerk webhook successfully hit!");
+  return new NextResponse("✅ Webhook working", { status: 200 });
 }
