@@ -1,26 +1,63 @@
-import { Webhook } from "svix";
-import { NextResponse } from "next/server";
-import type { WebhookEvent } from "@clerk/nextjs/server"; // 👈 Clerk types
+// app/api/webhook/clerk/route.ts
+import { Webhook } from 'svix';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+import User from '@/lib/database/models/user.model';
+import { connectToDatabase } from '@/lib/database';
 
 export async function POST(req: Request) {
   const payload = await req.text();
-  const headers = Object.fromEntries(req.headers);
+  const headerList = headers(); // ✅ no await
 
-  const wh = new Webhook(process.env.SIGNING_SECRET!);
+  const svixId = headerList.get('svix-id');
+  const svixTimestamp = headerList.get('svix-timestamp');
+  const svixSignature = headerList.get('svix-signature');
 
-  let evt: WebhookEvent; // 👈 FIX: Type it properly
+  if (!svixId || !svixTimestamp || !svixSignature) {
+    return new NextResponse('Missing Svix headers', { status: 400 });
+  }
+
+  const webhookSecret = process.env.SIGNING_SECRET;
+  if (!webhookSecret) {
+    return new NextResponse('Missing SIGNING_SECRET', { status: 500 });
+  }
+
+  const wh = new Webhook(webhookSecret);
+  let evt: { type: string; data: any };
+
   try {
-    evt = wh.verify(payload, headers) as WebhookEvent; // 👈 FIX: type assertion
+    evt = wh.verify(payload, {
+      'svix-id': svixId,
+      'svix-timestamp': svixTimestamp,
+      'svix-signature': svixSignature,
+    }) as { type: string; data: any };
   } catch (err) {
-    return new NextResponse("Webhook verification failed", { status: 400 });
+    console.error('❌ Webhook verification failed:', err);
+    return new NextResponse('Invalid signature', { status: 400 });
   }
 
-  const eventType = evt.type;
+  const { type, data } = evt;
 
-  if (eventType === "user.created") {
-    console.log("✅ New Clerk user created:", evt.data.id);
-    // Handle DB logic here (e.g. insert user into MongoDB)
+  if (type === 'user.created') {
+    try {
+      await connectToDatabase();
+
+      await User.create({
+        clerkId: data.id,
+        email: data.email_addresses[0]?.email_address,
+        username: data.username || data.email_addresses[0]?.email_address.split('@')[0],
+        firstName: data.first_name,
+        lastName: data.last_name,
+        photo: data.image_url,
+      });
+
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error('❌ Mongo insert failed:', error);
+      return new NextResponse('Failed to insert user', { status: 500 });
+    }
   }
 
-  return new NextResponse("Webhook handled", { status: 200 });
+  return new NextResponse('Event not handled', { status: 200 });
 }
