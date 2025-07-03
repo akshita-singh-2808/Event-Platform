@@ -8,7 +8,7 @@ import { connectToDatabase } from '@/lib/database';
 
 export async function POST(req: Request) {
   const payload = await req.text();
-  const headerList = headers(); // ✅ no await
+  const headerList = await headers(); // ✅ no await
 
   const svixId = headerList.get('svix-id');
   const svixTimestamp = headerList.get('svix-timestamp');
