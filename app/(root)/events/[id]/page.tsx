@@ -1,5 +1,6 @@
 import CheckoutButton from "@/components/shared/CheckoutButton";
 import Collection from "@/components/shared/Collection";
+import { Button } from "@/components/ui/button";
 import {
   getEventById,
   getRelatedEventsByCategory,
@@ -105,7 +106,15 @@ const Page = async (props: EventDetailsPageProps) => {
           </div>
         </div>
       </section>
-
+      <Button className="cursor-pointer button-gradient px-2 mx-2 my-8">
+        <a
+          href={`${process.env.NEXT_PUBLIC_SERVER_URL}/events/${event.id}/update`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Update
+        </a>
+      </Button>
       <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
         <h2 className="h2-bold">Related Events</h2>
 
