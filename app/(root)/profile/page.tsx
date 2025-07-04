@@ -62,7 +62,7 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
         </div>
       </section>
 
-      <section className="wrapper my-8">
+      {/* <section className="wrapper my-8">
         <Collection
           data={organizedEvents?.data}
           emptyTitle="No events have been created yet"
@@ -73,7 +73,7 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
           urlParamName="eventsPage"
           totalPages={organizedEvents?.totalPages}
         />
-      </section>
+      </section> */}
     </>
   );
 };
