@@ -1,23 +1,33 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
+import CategoryFilter from "@/components/shared/CategoryFilter";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
+import Search from "@/components/shared/Search";
+import { SearchParamProps } from "@/types";
+import Collection from "@/components/shared/Collection";
+import { getAllEvents } from "@/lib/actions/event.actions";
+// import AnimatedHeadline from "@/components/shared/AnimatedHeadlines";
+// console.log("POST received:", req.body);
 
-const Home = () => {
-  const { isLoaded, isSignedIn, user } = useUser();
+export default async function Home({ searchParams }: SearchParamProps) {
+  const resolvedSearchParams =
+    typeof searchParams?.then === "function"
+      ? await searchParams
+      : searchParams;
+  const page = Number(resolvedSearchParams?.page) || 1;
+  const searchText = (resolvedSearchParams?.query as string) || "";
+  const category = (resolvedSearchParams?.category as string) || "";
 
-  if (!isLoaded) return <div>Loading...</div>;
+  const events = await getAllEvents({
+    query: searchText,
+    category,
+    page,
+    limit: 6,
+  });
 
   return (
     <>
-      <section>
-        <div className="p-4">
-          <h1>Welcome {isSignedIn ? user?.firstName : "Guest"}!</h1>
-        </div>
-      </section>
-
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-5">
         <div className="wrapper grid grid-cols-1 gap-5 md:grid-cls-2 2xl:gap-0">
           <div className="flex flex-col justify-center gap-8">
@@ -67,15 +77,40 @@ const Home = () => {
         id="events"
         className="wrapper my-8 flex flex-col gap-8 md:gap-12"
       >
-        <h2 className="h2-hero">
-          Trusted by <br /> Thousands of Events
-        </h2>
-        <div className="flex w-full flex-col gap-5 md:flex-row">
-          Search Category Filter
+        {/* <div className="overflow-hidden whitespace-nowrap">
+          <h2 className="text-4xl sm:text-6xl lg:text-7xl tracking-wide  inline-block animate-marquee group-hover:[animation-play-state:paused]">
+            RAW,&nbsp;
+            <span className="bg-gradient-to-r from-orange-500 to-red-800 text-transparent bg-clip-text">
+              REAL, REVOLUTIONARY!
+            </span>
+          </h2>
+        </div> */}
+        <div className="overflow-x-hidden">
+          <div className="whitespace-nowrap animate-scrollText ">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl tracking-wide inline-block">
+              RAW,{" "}
+              <span className="bg-gradient-to-r from-purple-500 to-red-800 text-transparent bg-clip-text">
+                REAL, REVOLUTIONARY!
+              </span>
+            </h2>
+          </div>
         </div>
+
+        <div className="flex w-full flex-col gap-5 md:flex-row">
+          <Search />
+          <CategoryFilter />
+        </div>
+
+        <Collection
+          data={events?.data}
+          emptyTitle="No Events Found"
+          emptyStateSubtext="Come back later"
+          collectionType="All_Events"
+          limit={6}
+          page={page}
+          totalPages={events?.totalPages}
+        />
       </section>
     </>
   );
-};
-
-export default Home;
+}

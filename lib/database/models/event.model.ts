@@ -1,4 +1,5 @@
 import { Document, Schema, model, models } from "mongoose";
+import { required } from "zod/dist/types/v4/core/util";
 
 export interface IEvent extends Document {
   _id: string;
@@ -28,7 +29,7 @@ const EventSchema = new Schema({
   isFree: { type: Boolean, default: false },
   url: { type: String },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
-  organizer: { type: Schema.Types.ObjectId, ref: 'User' },
+  organizer: { type: String, ref: 'User', required: true },
 })
 
 const Event = models.Event || model('Event', EventSchema);

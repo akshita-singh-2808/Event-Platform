@@ -12,7 +12,7 @@ const UserSchema = new Schema({
 });
 
 // Optional: improve query speed
-UserSchema.index({ clerkId: 1 });
+// UserSchema.index({ clerkId: 1 });
 
 const User = models.User || model('User', UserSchema);
 

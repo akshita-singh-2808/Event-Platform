@@ -42,7 +42,7 @@ const OrderSchema = new Schema({
     ref: 'Event',
   },
   buyer: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
   },
 })
