@@ -18,8 +18,8 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   const user = await currentUser();
   const userId = user?.id as string;
 
-  const ordersPage = Number(searchParams.ordersPage) || 1;
-  const eventsPage = Number(searchParams.eventsPage) || 1;
+  const ordersPage = (await Number(searchParams.ordersPage)) || 1;
+  const eventsPage = (await Number(searchParams.eventsPage)) || 1;
 
   const orders = await getOrdersByUser({ userId, page: ordersPage });
 
