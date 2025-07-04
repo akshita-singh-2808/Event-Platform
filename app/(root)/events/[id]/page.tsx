@@ -12,10 +12,10 @@ interface EventDetailsPageProps {
   searchParams?: { page?: string };
 }
 
-const EventDetails = async ({
-  params,
-  searchParams,
-}: EventDetailsPageProps) => {
+const Page = async (props: EventDetailsPageProps) => {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+
   const id = params.id;
   const page = Number(searchParams?.page || 1);
 
@@ -123,4 +123,4 @@ const EventDetails = async ({
   );
 };
 
-export default EventDetails;
+export default Page;
