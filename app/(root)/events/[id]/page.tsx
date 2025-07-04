@@ -8,16 +8,16 @@ import { formatDateTime } from "@/lib/utils";
 import Image from "next/image";
 
 interface EventDetailsPageProps {
-  params: { id: string };
-  searchParams?: { page?: string };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ page?: string }>;
 }
 
 const Page = async (props: EventDetailsPageProps) => {
   const params = await props.params;
-  const searchParams = await props.searchParams;
+  const searchParams = props.searchParams ? await props.searchParams : {};
 
   const id = params.id;
-  const page = Number(searchParams?.page || 1);
+  const page = Number(searchParams.page || 1);
 
   const event = await getEventById(id);
 

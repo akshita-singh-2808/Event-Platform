@@ -1,23 +1,19 @@
-import React from "react";
-import Link from "next/link";
+import Search from "@/components/shared/Search";
 import CategoryFilter from "@/components/shared/CategoryFilter";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
-import Search from "@/components/shared/Search";
-import { SearchParamProps } from "@/types";
-import Collection from "@/components/shared/Collection";
 import { getAllEvents } from "@/lib/actions/event.actions";
-// import AnimatedHeadline from "@/components/shared/AnimatedHeadlines";
-// console.log("POST received:", req.body);
+import Collection from "@/components/shared/Collection";
 
-export default async function Home({ searchParams }: SearchParamProps) {
-  const resolvedSearchParams =
-    typeof searchParams?.then === "function"
-      ? await searchParams
-      : searchParams;
-  const page = Number(resolvedSearchParams?.page) || 1;
-  const searchText = (resolvedSearchParams?.query as string) || "";
-  const category = (resolvedSearchParams?.category as string) || "";
+interface HomePageProps {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}
+
+export default async function Home({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const page = Number(resolvedSearchParams?.page || 1);
+  const searchText = resolvedSearchParams?.query || "";
+  const category = resolvedSearchParams?.category || "";
 
   const events = await getAllEvents({
     query: searchText,
@@ -77,16 +73,8 @@ export default async function Home({ searchParams }: SearchParamProps) {
         id="events"
         className="wrapper my-8 flex flex-col gap-8 md:gap-12"
       >
-        {/* <div className="overflow-hidden whitespace-nowrap">
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl tracking-wide  inline-block animate-marquee group-hover:[animation-play-state:paused]">
-            RAW,&nbsp;
-            <span className="bg-gradient-to-r from-orange-500 to-red-800 text-transparent bg-clip-text">
-              REAL, REVOLUTIONARY!
-            </span>
-          </h2>
-        </div> */}
         <div className="overflow-x-hidden">
-          <div className="whitespace-nowrap animate-scrollText ">
+          <div className="whitespace-nowrap animate-scrollText">
             <h2 className="text-xl sm:text-2xl lg:text-3xl tracking-wide inline-block">
               RAW,{" "}
               <span className="bg-gradient-to-r from-purple-500 to-red-800 text-transparent bg-clip-text">

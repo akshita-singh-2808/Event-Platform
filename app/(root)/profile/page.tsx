@@ -6,16 +6,16 @@ import { IOrder } from "@/lib/database/models/order.model";
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import React from "react";
-
 interface ProfilePageProps {
-  searchParams: {
+  searchParams: Promise<{
     ordersPage?: string;
     eventsPage?: string;
-  };
+  }>;
 }
 
 const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   const params = await searchParams;
+
   const user = await currentUser();
   const userId = user?.id as string;
 
@@ -23,8 +23,8 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   const eventsPage = Number(params.eventsPage) || 1;
 
   const orders = await getOrdersByUser({ userId, page: ordersPage });
-
   const orderedEvents = orders?.data.map((order: IOrder) => order.event) || [];
+
   const organizedEvents = await getEventsByUser({ userId, page: eventsPage });
 
   return (
