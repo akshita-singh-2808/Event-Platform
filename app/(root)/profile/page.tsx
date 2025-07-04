@@ -3,13 +3,18 @@ import { Button } from "@/components/ui/button";
 import { getEventsByUser } from "@/lib/actions/event.actions";
 import { getOrdersByUser } from "@/lib/actions/order.actions";
 import { IOrder } from "@/lib/database/models/order.model";
-import { SearchParamProps } from "@/types";
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import React from "react";
 
-const ProfilePage = async (props: SearchParamProps) => {
-  const searchParams = props.searchParams || {};
+interface ProfilePageProps {
+  searchParams: {
+    ordersPage?: string;
+    eventsPage?: string;
+  };
+}
+
+const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   const user = await currentUser();
   const userId = user?.id as string;
 
