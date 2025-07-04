@@ -5,14 +5,19 @@ import {
   getRelatedEventsByCategory,
 } from "@/lib/actions/event.actions";
 import { formatDateTime } from "@/lib/utils";
-import { SearchParamProps } from "@/types";
 import Image from "next/image";
 
-const EventDetails = async ({ params, searchParams }: SearchParamProps) => {
-  const resolvedParams = await params;
-  const resolvedSearchParams = await searchParams;
-  const id = resolvedParams.id;
-  const page = Number(resolvedSearchParams?.page || 1);
+interface EventDetailsPageProps {
+  params: { id: string };
+  searchParams?: { page?: string };
+}
+
+const EventDetails = async ({
+  params,
+  searchParams,
+}: EventDetailsPageProps) => {
+  const id = params.id;
+  const page = Number(searchParams?.page || 1);
 
   const event = await getEventById(id);
 
